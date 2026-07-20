@@ -1,0 +1,19 @@
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: poller-worker-scaler
+  namespace: uptime-platform
+spec:
+  scaleTargetRef:
+    name: poller-worker
+  minReplicaCount: 0
+  maxReplicaCount: 20
+  cooldownPeriod: 30
+  pollingInterval: 5
+  triggers:
+    - type: redis
+      metadata:
+        address: redis.uptime-platform.svc.cluster.local:6379
+        listName: due-checks
+        listLength: "5"
+        activationListLength: "1"
