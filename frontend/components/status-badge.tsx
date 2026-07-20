@@ -7,7 +7,9 @@ export function StatusBadge({ isUp }: { isUp: boolean }) {
           : "border-status-down text-status-down"
       }`}
     >
-      <span className={`size-1.5 rounded-full ${isUp ? "bg-status-up" : "bg-status-down"}`} />
+      <span
+        className={`size-1.5 rounded-full ${isUp ? "bg-status-up" : "bg-status-down"}`}
+      />
       {isUp ? "Up" : "Down"}
     </span>
   );

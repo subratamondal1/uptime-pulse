@@ -44,12 +44,16 @@ export function MonitorList({
           <TableBody>
             {monitors.map((monitor) => (
               <TableRow key={monitor.id}>
-                <TableCell className="max-w-64 truncate font-medium">{monitor.url}</TableCell>
+                <TableCell className="max-w-64 truncate font-medium">
+                  {monitor.url}
+                </TableCell>
                 <TableCell>
                   <StatusBadge isUp={monitor.latest_check?.is_up ?? false} />
                 </TableCell>
                 <TableCell className="font-mono tabular-nums">
-                  {formatResponseTime(monitor.latest_check?.response_time_ms ?? null)}
+                  {formatResponseTime(
+                    monitor.latest_check?.response_time_ms ?? null,
+                  )}
                 </TableCell>
                 <TableCell className="text-muted-foreground">
                   {formatTimestamp(monitor.latest_check?.checked_at)}
@@ -90,7 +94,9 @@ export function MonitorList({
             <div className="mt-3 flex items-center justify-between">
               <StatusBadge isUp={monitor.latest_check?.is_up ?? false} />
               <span className="font-mono text-sm tabular-nums text-muted-foreground">
-                {formatResponseTime(monitor.latest_check?.response_time_ms ?? null)}
+                {formatResponseTime(
+                  monitor.latest_check?.response_time_ms ?? null,
+                )}
               </span>
             </div>
             <p className="mt-2 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">

@@ -32,7 +32,8 @@ export async function createMonitor(url: string): Promise<Monitor> {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ url }),
   });
-  if (!res.ok) throw new Error((await res.json()).detail ?? "failed to create monitor");
+  if (!res.ok)
+    throw new Error((await res.json()).detail ?? "failed to create monitor");
   return MonitorSchema.parse(await res.json());
 }
 
@@ -42,7 +43,9 @@ export async function deleteMonitor(id: string): Promise<void> {
 }
 
 export async function listChecks(id: string): Promise<Check[]> {
-  const res = await fetch(`${API_BASE}/monitors/${id}/checks`, { cache: "no-store" });
+  const res = await fetch(`${API_BASE}/monitors/${id}/checks`, {
+    cache: "no-store",
+  });
   if (!res.ok) throw new Error("failed to load checks");
   return z.array(CheckSchema).parse(await res.json());
 }
