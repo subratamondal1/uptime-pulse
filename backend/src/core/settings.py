@@ -8,6 +8,8 @@ class Settings(BaseSettings):
     poll_interval_seconds: int = 60
     ping_timeout_seconds: float = 5.0
     cors_origins: list[str] = ["http://localhost:3000"]
+    redis_url: str = "redis://localhost:6379/0"
+    queue_key: str = "due-checks"
 
 
 settings = Settings()

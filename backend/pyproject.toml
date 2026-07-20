@@ -10,6 +10,7 @@ dependencies = [
     "pydantic-settings>=2.7",
     "structlog>=24.4",
     "orjson>=3.10",
+    "redis>=5.0",
 ]
 
 [dependency-groups]
