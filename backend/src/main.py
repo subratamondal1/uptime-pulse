@@ -16,9 +16,10 @@ from src.monitors.router import router as monitors_router
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     configure_logging()
     await init_db()
-    task = asyncio.create_task(poller_loop())
+    task = asyncio.create_task(poller_loop()) if settings.enable_inprocess_poller else None
     yield
-    task.cancel()
+    if task is not None:
+        task.cancel()
 
 
 app = FastAPI(title="Epifi Uptime Monitor", lifespan=lifespan)

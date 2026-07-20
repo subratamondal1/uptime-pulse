@@ -10,6 +10,7 @@ class Settings(BaseSettings):
     cors_origins: list[str] = ["http://localhost:3000"]
     redis_url: str = "redis://localhost:6379/0"
     queue_key: str = "due-checks"
+    enable_inprocess_poller: bool = True
 
 
 settings = Settings()
