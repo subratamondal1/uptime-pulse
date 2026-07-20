@@ -83,6 +83,8 @@ automatically, not just documented:
 
 Run it yourself any time with `make ci`.
 
+![The pre-push hook blocking a push until make ci passes](docs/assets/ci-gate-terminal.png)
+
 ## Testing up/down detection
 
 1. Open http://localhost:3000
