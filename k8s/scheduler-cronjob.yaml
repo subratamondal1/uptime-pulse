@@ -1,0 +1,29 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: check-scheduler
+  namespace: uptime-platform
+spec:
+  schedule: "* * * * *"
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: Never
+          containers:
+            - name: check-scheduler
+              image: epifi-uptime-monitor-backend:latest
+              imagePullPolicy: IfNotPresent
+              command: ["python3", "-m", "src.worker.scheduler"]
+              env:
+                - { name: UPTIME_REDIS_URL, value: "redis://redis:6379/0" }
+                - { name: UPTIME_DB_PATH, value: "/data/uptime.db" }
+              volumeMounts:
+                - { name: data, mountPath: /data }
+              resources:
+                requests: { cpu: "25m", memory: "32Mi" }
+                limits: { cpu: "100m", memory: "64Mi" }
+          volumes:
+            - name: data
+              hostPath: { path: /data/uptime, type: DirectoryOrCreate }
