@@ -1,0 +1,28 @@
+pre-commit:
+  parallel: true
+  commands:
+    backend-format:
+      root: "backend/"
+      glob: "*.py"
+      run: uv run ruff format --check {staged_files}
+    backend-lint:
+      root: "backend/"
+      glob: "*.py"
+      run: uv run ruff check {staged_files}
+    backend-typecheck:
+      root: "backend/"
+      glob: "*.py"
+      run: uv run ty check src/
+    frontend-biome:
+      root: "frontend/"
+      glob: "*.{ts,tsx,js,jsx,json,css}"
+      run: bunx biome check --no-errors-on-unmatched {staged_files}
+    frontend-typecheck:
+      root: "frontend/"
+      glob: "*.{ts,tsx}"
+      run: bunx tsc --noEmit
+
+pre-push:
+  commands:
+    full-ci:
+      run: make ci

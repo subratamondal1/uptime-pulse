@@ -1,4 +1,4 @@
-.PHONY: help up down logs test-endpoints k8s-up k8s-down k8s-watch k8s-port-forward k8s-load-test retry lint clean
+.PHONY: help up down logs test-endpoints k8s-up k8s-down k8s-watch k8s-port-forward k8s-load-test retry lint test ci clean
 
 help:
 	@echo "Docker Compose (the submission):"
@@ -15,6 +15,8 @@ help:
 	@echo "  make k8s-load-test   enqueue jobs and trigger a visible scale-up"
 	@echo ""
 	@echo "  make lint            ruff + ty (backend), biome + tsc (frontend)"
+	@echo "  make test            pytest (backend)"
+	@echo "  make ci              full gate: lint + typecheck + test, both stacks"
 	@echo "  make clean           remove local sqlite data + node_modules caches"
 
 up:
@@ -94,8 +96,15 @@ k8s-load-test:
 	echo "enqueued 8 jobs — watch: make k8s-watch"
 
 lint:
-	cd backend && uv run ruff check src/ && uv run ty check src/
+	cd backend && uv run ruff format --check . && uv run ruff check . && uv run ty check src/ tests/
 	cd frontend && bunx biome check . && bunx tsc --noEmit
+
+test:
+	cd backend && uv run pytest tests/ -v
+
+ci: lint test
+	cd frontend && bun run build
+	@echo "make ci passed."
 
 clean:
 	rm -rf backend/data frontend/.next frontend/node_modules
