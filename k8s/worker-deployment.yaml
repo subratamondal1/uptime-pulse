@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: poller-worker
+  namespace: uptime-platform
+spec:
+  replicas: 0
+  selector:
+    matchLabels: { app: poller-worker }
+  template:
+    metadata:
+      labels: { app: poller-worker }
+    spec:
+      containers:
+        - name: poller-worker
+          image: epifi-uptime-monitor-backend:latest
+          imagePullPolicy: IfNotPresent
+          command: ["python3", "-m", "src.worker.consumer"]
+          env:
+            - { name: UPTIME_REDIS_URL, value: "redis://redis:6379/0" }
+            - { name: UPTIME_DB_PATH, value: "/data/uptime.db" }
+          volumeMounts:
+            - { name: data, mountPath: /data }
+          resources:
+            requests: { cpu: "50m", memory: "64Mi" }
+            limits: { cpu: "200m", memory: "128Mi" }
+      volumes:
+        - name: data
+          hostPath: { path: /data/uptime, type: DirectoryOrCreate }
