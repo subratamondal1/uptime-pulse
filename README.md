@@ -133,6 +133,11 @@ Local CPU-bound pod ceiling on this machine's Colima allocation (50m CPU request
 vCPU after system reserve): **~140 pods** — the `ScaledObject`'s `maxReplicaCount: 20` here is a deliberately
 conservative local demo value, not that ceiling.
 
+**One real bug this surfaced**: an initial clean run of the above cycle happened to not trigger it, but a
+repeat adversarial pass under rapid, back-to-back enqueue load found `poller-worker` pods crash-looping on a
+Redis `BLPOP` client-timeout race (see `AI_LOG.md`'s third course-correction). Fixed and re-verified — three
+rapid stress rounds afterward, **zero restarts**.
+
 **What this does and doesn't prove**: it proves the scaling *mechanism* — KEDA reacting to real queue depth,
 0→N→0, correctly and repeatably. It does not prove cloud-scale throughput, multi-AZ failure isolation, or
 node-level autoscaling (Karpenter) — a single-node local cluster has no equivalent for any of those, and the
