@@ -66,6 +66,23 @@ docker compose up --build
 - Frontend: http://localhost:3000
 - Backend: http://localhost:8000
 
+## Code quality gate
+
+Every commit and push in this repo goes through the same gate a reviewer would run by hand — enforced
+automatically, not just documented:
+
+- **Pre-commit** (lefthook, <2s): staged backend `.py` files get `ruff format --check`, `ruff check`, and `ty
+  check`; staged frontend files get `biome check` and `tsc --noEmit`. Bad formatting or a type error never
+  enters git history.
+- **Pre-push** (lefthook): the full `make ci` gate runs before the push is allowed to leave this machine —
+  backend lint + typecheck + all 8 pytest tests, frontend lint + typecheck + production build. A failing gate
+  blocks the push entirely; nothing broken ever reaches GitHub.
+- **GitHub Actions** (`.github/workflows/ci.yml`): the identical gate re-runs server-side on every push/PR —
+  independent of the local hooks, so it can't be skipped by bypassing them locally. Status: see the CI badge
+  at the top of this file.
+
+Run it yourself any time with `make ci`.
+
 ## Testing up/down detection
 
 1. Open http://localhost:3000
