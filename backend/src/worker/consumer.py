@@ -33,10 +33,15 @@ async def process_one(client: redis.Redis, http_client: httpx.AsyncClient, monit
 
 async def main() -> None:
     configure_logging()
-    client = redis.from_url(settings.redis_url)
+    client = redis.from_url(settings.redis_url, socket_timeout=10, socket_connect_timeout=10)
     async with httpx.AsyncClient() as http_client:
         while True:
-            result = await client.blpop([settings.queue_key], timeout=5)
+            try:
+                result = await client.blpop([settings.queue_key], timeout=5)
+            except (redis.TimeoutError, redis.ConnectionError) as exc:
+                logger.warning("redis_transient_error", error=str(exc))
+                await asyncio.sleep(1)
+                continue
             if result is None:
                 continue
             _, raw_id = result
