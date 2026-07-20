@@ -11,6 +11,12 @@ spec:
     metadata:
       labels: { app: backend-api }
     spec:
+      initContainers:
+        - name: fix-data-perms
+          image: busybox:1.36
+          command: ["sh", "-c", "chown -R 65532:65532 /data"]
+          volumeMounts:
+            - { name: data, mountPath: /data }
       containers:
         - name: backend-api
           image: epifi-uptime-monitor-backend:latest
