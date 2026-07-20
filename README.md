@@ -2,7 +2,7 @@
 
 # Epifi Uptime Monitor
 
-[![CI](https://github.com/subratamondal1/uptime-pulse/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/subratamondal1/uptime-pulse/actions/workflows/ci.yml)
+Lightweight uptime monitor. FastAPI backend pings registered URLs on an interval, stores status/response-time/timestamp in SQLite; Next.js frontend shows live status.
 
 **Backend**
 
@@ -32,8 +32,6 @@
 
 ![Dashboard screenshot](docs/assets/dashboard-screenshot.png)
 
-Lightweight uptime monitor. FastAPI backend pings registered URLs on an interval, stores status/response-time/timestamp in SQLite; Next.js frontend shows live status.
-
 ## Architecture
 
 ```mermaid
@@ -59,9 +57,9 @@ flowchart LR
     class DB brutRed
 ```
 
-## Setup
+## Quickstart
 
-```
+```bash
 docker compose up --build
 ```
 
