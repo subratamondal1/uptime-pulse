@@ -1,4 +1,7 @@
-import { Trash2 } from "lucide-react";
+"use client";
+
+import { Check, Copy, ExternalLink, Trash2 } from "lucide-react";
+import { useState } from "react";
 import { StatusBadge } from "@/components/status-badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,6 +22,46 @@ function formatResponseTime(ms: number | null): string {
 function formatTimestamp(iso: string | undefined): string {
   if (!iso) return "never";
   return new Date(iso).toLocaleTimeString();
+}
+
+function RowActions({ url, onDelete }: { url: string; onDelete: () => void }) {
+  const [copied, setCopied] = useState(false);
+
+  function handleCopy() {
+    navigator.clipboard.writeText(url);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500);
+  }
+
+  return (
+    <div className="flex items-center justify-end gap-0.5">
+      <Button
+        variant="ghost"
+        size="icon-sm"
+        aria-label="Copy URL"
+        onClick={handleCopy}
+      >
+        {copied ? (
+          <Check className="size-4 text-status-up" />
+        ) : (
+          <Copy className="size-4" />
+        )}
+      </Button>
+      <Button variant="ghost" size="icon-sm" aria-label="Open URL" asChild>
+        <a href={url} target="_blank" rel="noopener noreferrer">
+          <ExternalLink className="size-4" />
+        </a>
+      </Button>
+      <Button
+        variant="ghost"
+        size="icon-sm"
+        aria-label="Delete monitor"
+        onClick={onDelete}
+      >
+        <Trash2 className="size-4 text-status-down" />
+      </Button>
+    </div>
+  );
 }
 
 export function MonitorList({
@@ -45,7 +88,14 @@ export function MonitorList({
             {monitors.map((monitor) => (
               <TableRow key={monitor.id}>
                 <TableCell className="max-w-64 truncate font-medium">
-                  {monitor.url}
+                  <a
+                    href={monitor.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:text-accent hover:underline"
+                  >
+                    {monitor.url}
+                  </a>
                 </TableCell>
                 <TableCell>
                   <StatusBadge isUp={monitor.latest_check?.is_up ?? false} />
@@ -59,14 +109,10 @@ export function MonitorList({
                   {formatTimestamp(monitor.latest_check?.checked_at)}
                 </TableCell>
                 <TableCell className="text-right">
-                  <Button
-                    variant="ghost"
-                    size="icon-sm"
-                    aria-label="Delete monitor"
-                    onClick={() => onDelete(monitor.id)}
-                  >
-                    <Trash2 className="size-4 text-status-down" />
-                  </Button>
+                  <RowActions
+                    url={monitor.url}
+                    onDelete={() => onDelete(monitor.id)}
+                  />
                 </TableCell>
               </TableRow>
             ))}
@@ -81,15 +127,18 @@ export function MonitorList({
             className="rounded-lg border-2 border-brutal-border bg-card p-4"
           >
             <div className="flex items-start justify-between gap-2">
-              <p className="break-all font-medium">{monitor.url}</p>
-              <Button
-                variant="ghost"
-                size="icon-sm"
-                aria-label="Delete monitor"
-                onClick={() => onDelete(monitor.id)}
+              <a
+                href={monitor.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="break-all font-medium hover:text-accent hover:underline"
               >
-                <Trash2 className="size-4 text-status-down" />
-              </Button>
+                {monitor.url}
+              </a>
+              <RowActions
+                url={monitor.url}
+                onDelete={() => onDelete(monitor.id)}
+              />
             </div>
             <div className="mt-3 flex items-center justify-between">
               <StatusBadge isUp={monitor.latest_check?.is_up ?? false} />
