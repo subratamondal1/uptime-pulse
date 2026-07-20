@@ -53,12 +53,13 @@ k8s-up:
 	@$(MAKE) --no-print-directory retry CMD="kind create cluster --config k8s/kind-config.yaml"
 	@$(MAKE) --no-print-directory retry CMD="helm repo add kedacore https://kedacore.github.io/charts"
 	@$(MAKE) --no-print-directory retry CMD="helm repo update"
-	@$(MAKE) --no-print-directory retry CMD="helm install keda kedacore/keda --namespace keda --create-namespace"
-	kubectl wait --for=condition=Available deployment --all -n keda --timeout=90s
+	@$(MAKE) --no-print-directory retry CMD="helm upgrade --install keda kedacore/keda --namespace keda --create-namespace"
+	@$(MAKE) --no-print-directory retry CMD="kubectl wait --for=condition=Available deployment --all -n keda --timeout=180s"
 	@$(MAKE) --no-print-directory retry CMD="docker build -t epifi-uptime-monitor-backend:latest ./backend"
 	@$(MAKE) --no-print-directory retry CMD="kind load docker-image epifi-uptime-monitor-backend:latest --name uptime-platform"
-	kubectl apply -f k8s/
-	kubectl wait --for=condition=Available deployment/redis deployment/backend-api -n uptime-platform --timeout=90s
+	kubectl apply -f k8s/namespace.yaml
+	kubectl apply -f k8s/redis.yaml -f k8s/backend-api.yaml -f k8s/worker-deployment.yaml -f k8s/scheduler-cronjob.yaml -f k8s/keda-scaledobject.yaml
+	@$(MAKE) --no-print-directory retry CMD="kubectl wait --for=condition=Available deployment/redis deployment/backend-api -n uptime-platform --timeout=180s"
 	@echo "backend-api ready. run: make k8s-port-forward"
 
 retry:

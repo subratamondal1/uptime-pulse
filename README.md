@@ -106,8 +106,11 @@ kind create cluster --config k8s/kind-config.yaml
 helm install keda kedacore/keda --namespace keda --create-namespace
 docker build -t epifi-uptime-monitor-backend:latest ./backend
 kind load docker-image epifi-uptime-monitor-backend:latest --name uptime-platform
-kubectl apply -f k8s/
+kubectl apply -f k8s/namespace.yaml
+kubectl apply -f k8s/redis.yaml -f k8s/backend-api.yaml -f k8s/worker-deployment.yaml -f k8s/scheduler-cronjob.yaml -f k8s/keda-scaledobject.yaml
 ```
+
+Or simply `make k8s-up` — same steps, wrapped with automatic retry on transient network failures.
 
 Watch it scale, live:
 
