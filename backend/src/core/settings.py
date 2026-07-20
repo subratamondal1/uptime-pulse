@@ -11,6 +11,11 @@ class Settings(BaseSettings):
     redis_url: str = "redis://localhost:6379/0"
     queue_key: str = "due-checks"
     enable_inprocess_poller: bool = True
+    environment: str = "development"
+
+    @property
+    def is_production(self) -> bool:
+        return self.environment == "production"
 
 
 settings = Settings()
