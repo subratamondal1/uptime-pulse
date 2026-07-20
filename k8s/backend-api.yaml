@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-api
+  namespace: uptime-platform
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: backend-api }
+  template:
+    metadata:
+      labels: { app: backend-api }
+    spec:
+      containers:
+        - name: backend-api
+          image: epifi-uptime-monitor-backend:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8000
+          env:
+            - { name: UPTIME_REDIS_URL, value: "redis://redis:6379/0" }
+            - { name: UPTIME_DB_PATH, value: "/data/uptime.db" }
+            - { name: UPTIME_ENABLE_INPROCESS_POLLER, value: "false" }
+          volumeMounts:
+            - { name: data, mountPath: /data }
+          resources:
+            requests: { cpu: "100m", memory: "128Mi" }
+            limits: { cpu: "500m", memory: "256Mi" }
+      volumes:
+        - name: data
+          hostPath: { path: /data/uptime, type: DirectoryOrCreate }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-api
+  namespace: uptime-platform
+spec:
+  selector: { app: backend-api }
+  ports:
+    - port: 8000
+      targetPort: 8000
