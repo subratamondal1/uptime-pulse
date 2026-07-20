@@ -5,6 +5,8 @@ RUN bun install --frozen-lockfile
 
 FROM oven/bun:1-slim AS builder
 WORKDIR /app
+ARG NEXT_PUBLIC_API_BASE=http://localhost:8000
+ENV NEXT_PUBLIC_API_BASE=${NEXT_PUBLIC_API_BASE}
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
