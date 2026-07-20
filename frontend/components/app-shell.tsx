@@ -1,6 +1,6 @@
 "use client";
 
-import { Activity, Menu, X } from "lucide-react";
+import { Activity, Menu, ScrollText, X } from "lucide-react";
 import { useState } from "react";
 import { ThemeToggle } from "@/components/theme-toggle";
 
@@ -20,22 +20,79 @@ function BrandBlock() {
   );
 }
 
+function LegendRow({
+  colorClass,
+  label,
+}: {
+  colorClass: string;
+  label: string;
+}) {
+  return (
+    <div className="flex items-center gap-2 text-sm">
+      <span className={`size-2 rounded-full ${colorClass}`} />
+      <span className="text-muted-foreground">{label}</span>
+    </div>
+  );
+}
+
+function ResourceLink({
+  href,
+  icon,
+  label,
+}: {
+  href: string;
+  icon: React.ReactNode;
+  label: string;
+}) {
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="flex items-center gap-2 rounded-md px-1.5 py-1.5 text-sm text-muted-foreground hover:bg-secondary hover:text-foreground"
+    >
+      {icon}
+      {label}
+    </a>
+  );
+}
+
 function SidebarBody() {
   return (
-    <div className="flex h-full flex-col justify-between p-5">
-      <div className="flex flex-col gap-8">
-        <BrandBlock />
-        <nav className="flex flex-col gap-1">
-          <span className="rounded-md border-2 border-brutal-border bg-primary px-3 py-2 text-sm font-bold text-primary-foreground">
-            Dashboard
-          </span>
-        </nav>
-      </div>
-      <div className="flex items-center justify-between border-t border-border pt-4">
-        <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-          Theme
+    <div className="flex h-full flex-col p-5">
+      <BrandBlock />
+
+      <nav className="mt-8 flex flex-col gap-1">
+        <span className="rounded-md border-2 border-brutal-border bg-primary px-3 py-2 text-sm font-bold text-primary-foreground">
+          Dashboard
         </span>
-        <ThemeToggle />
+      </nav>
+
+      <div className="mt-8 flex flex-col gap-3 rounded-lg border-2 border-brutal-border bg-card p-4">
+        <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+          Status legend
+        </p>
+        <LegendRow colorClass="bg-status-up" label="Up — responded under 400" />
+        <LegendRow
+          colorClass="bg-status-down"
+          label="Down — timeout or error"
+        />
+      </div>
+
+      <div className="mt-auto flex flex-col gap-3">
+        <div className="flex flex-col gap-0.5 border-t border-border pt-3">
+          <ResourceLink
+            href="http://localhost:8000/healthz"
+            icon={<ScrollText className="size-4" />}
+            label="Backend health"
+          />
+        </div>
+        <div className="flex items-center justify-between border-t border-border pt-3">
+          <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+            Theme
+          </span>
+          <ThemeToggle />
+        </div>
       </div>
     </div>
   );
