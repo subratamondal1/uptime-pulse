@@ -11,6 +11,7 @@ dependencies = [
     "structlog>=24.4",
     "orjson>=3.10",
     "redis>=5.0",
+    "async-timeout>=4.0",
 ]
 
 [dependency-groups]
