@@ -1,5 +1,7 @@
 # Epifi Uptime Monitor
 
+![Dashboard screenshot](docs/assets/dashboard-screenshot.png)
+
 Lightweight uptime monitor. FastAPI backend pings registered URLs on an interval, stores status/response-time/timestamp in SQLite; Next.js frontend shows live status.
 
 ## Architecture
@@ -45,9 +47,28 @@ docker compose up --build
 
 ## Stack
 
-- **Backend**: FastAPI, SQLite (`aiosqlite`), `httpx`, `uv`/`ruff`/`ty`
-- **Frontend**: Next.js 16, Bun, Biome, Tailwind 4, shadcn/ui, next-themes
-- **Docker**: both images distroless, non-root, multi-stage
+**Backend**
+- FastAPI, Python 3.11
+- SQLite via `aiosqlite` (right-sized for this scale — see `career`/architecture notes on when this would change)
+- `httpx` for outbound pings, `redis` for the queue-based worker path
+- Pydantic Settings, structlog (colored console in dev, JSON in prod)
+- `uv` (dependency management), `ruff` (lint/format), `ty` (type checking), `pytest` (tests)
+
+**Frontend**
+- Next.js 16 (App Router, Turbopack), Bun
+- Tailwind CSS 4, shadcn/ui (Radix primitives), next-themes (light/dark)
+- Biome (lint/format), `tsc` (type checking)
+
+**Infra**
+- Both Docker images: distroless, non-root, multi-stage builds
+- `docker-compose.yml` for local orchestration
+- `k8s/` — Kubernetes + KEDA autoscaling (bonus layer, see "Scaling this to production" below)
+
+**DevOps**
+- `lefthook` pre-commit hook — ruff format/lint + ty (backend), Biome + tsc (frontend), scoped to staged files only
+- `lefthook` pre-push hook — runs the full `make ci` gate (lint + typecheck + `pytest` + frontend build) before any push is allowed
+- GitHub Actions (`.github/workflows/ci.yml`) — same gate, enforced on every push/PR, both stacks as separate jobs
+- `make ci` runs the identical gate locally, on demand
 
 ## Deployment sketch
 
